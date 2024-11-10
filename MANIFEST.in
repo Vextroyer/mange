@@ -1,0 +1,4 @@
+recursive-include src/test/test_files *
+recursive-include src/mange/templates *
+recursive-include src/mange/static *
+exclude src/mange/static/img *
