@@ -87,7 +87,7 @@ class Company(Base):
     def over_limit(self):
         return max(0, self.calculate() - self.limit)
 
-class Item(Base)
+class Item(Base):
     """
     Item corresponding to a company
     """
