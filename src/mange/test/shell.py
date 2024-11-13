@@ -1,9 +1,15 @@
+from code import InteractiveConsole
+
+# to avoid ^[[A nonsense when pressing up arrow
+import readline
+import sys
+from sqlalchemy import func
+from sqlalchemy.sql import text
+
+
 from mange.conf import settings
 from mange.db import *
 from mange.api import *
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 URL = settings.DATABASES["default"]["engine"]
 

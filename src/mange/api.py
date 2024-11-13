@@ -10,13 +10,14 @@ import time
 
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text, select
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 from mange.conf import settings
 from mange.db import (
     Base,
     Company,
     Bill,
+    Item,
     load_backup,
 )
 from mange.log import logged
@@ -88,14 +89,11 @@ class Client:
         assert db_file.exists(), f"DB file doesn't exist! {db_file}"
         assert db_file.stat().st_size > 0, "DB file is just an empty file!"
 
-        source = create_engine(url)
-        # always load to memory
-        self.engine = create_engine("sqlite:///:memory:")
-        # load db from file
-        load_backup(source, self.engine)
+        self.engine = create_engine(url)
 
-        Session = sessionmaker(bind=self.engine, **config)  # pylint: --disable=C0103
-        self.session = Session()
+        self.engine = create_engine(url)
+
+        self.session = scoped_session(sessionmaker(bind=self.engine, **config))  # pylint: --disable=C0103
 
     def __delete__(self, obj):
         self.session.rollback()
@@ -161,6 +159,12 @@ class Client:
 
     def get_bill(self, /, **kwargs):
         return self._get(Bill, **kwargs)
+
+    def create_item(self, /, **kwargs):
+        return self._create(Item, **kwargs)
+
+    def get_item(self, /, **kwargs):
+        return self._get(Item, **kwargs)
 
     def liquidate_bill(self, company):
         """
