@@ -26,15 +26,17 @@ A continuacíon se presentan los distintos elementos que componen el diseño con
 
 \begin{itemize}
 \item Sucursal
+\includegraphics[scale=0.25]{Imagenes/Informe1/EntidadSucursal.png}
 Esta entidad modela las sucursales o centros de trabajo descritos en las especificaciones del problema.
 La propiedad ID es la llave primaria de esta entidad.
 La propiedad NOMBRE describe el nombre de la sucursal.
 La propiedad Direccion describe la direccion fisica de la sucursal.
 La propiedad Tipo describe el tipo de instalacion que es la sucursal.
-La propiedad Limite describe el limite de consumo electrico diario establecido para dicha sucursal.
+La propiedad Limite describe el limite de consumo electrico mensual establecido para dicha sucursal.
 La propiedad Aumento describe el parametro aumento definido para esta sucursal a la hora de calcular el costo.
 La propiedad Por Ciento Extra describe el parametro por\_ciento\_extra establecido para esta sucursal a la hora de calcular el costo.
 \item Area
+\includegraphics[scale=0.25]{Imagenes/Informe1/EntidadArea.png}
 Esta entidad representa las distintas areas, se consideran las oficinas como areas, que pueden pertenecer a una sucursal.
 La propiedad Nombre describe el nombre del area. Es parte de la llave primaria de esta entidad.
 La propiedad Responsable contiene el nombre de la persona responsable del area.
@@ -42,11 +44,23 @@ La propiedad ID\_Sucursal contiene el ID de la sucursal a la que pertenece esta 
 
 La entidad Area es una entidad debil cuya entidad fuerte es sucursal.
 \item Equipo
+\includegraphics[scale=0.25]{Imagenes/Informe1/EntidadEquipo.png}
 Esta entidad modela los equipos de consumo de energia.
 La propiedad ID es la llave primaria de esta entidad.
 La propiedad Sistema\_Energia\_Critica representa si este equipo pertenece a un sistema de energia critica o no
-Las demas propiedades representan caracteristicas del equipo.
+La propiedad ConsumoPromedioDiario representa el consumo promedio de energia en kw diario del equipo.
+La propiedad EstadoMantenimiento describe el estado de mantenimiento del equipo.
+La propiedad FrecuenciaUso representa la cantidad de veces por dia que se utiliza un equipo.
+La propiedad FechaInstalacion describe la fecha en la que se instalo el equipo en el area.
+La propiedad VidaUtilEstimada representa la cantidad de tiempo en dias que se estima puede funcionar el equipo desde su instalacion.
+La propiedad Tipo describe el tipo de equipo.
+La propiedad Marca representa la marca del equipo.
+La propiedad Modelo representa el modelo del equipo.
+La propiedad EficienciaEnergetica ...
+La propiedad CapacidadNominal ....
+
 \item Registro
+\includegraphics[scale=0.25]{Imagenes/Informe1/EntidadRegistro.png}
 Esta entidad modela los registros historicos de consumo de energia de las sucursales.
 La propiedad Fecha representa la fecha a la que corresponde el registro. Ojo, no es la fecha en que se ingreso el registro. Esta propiedad es parte de la llave primaria de esta entidad.
 La propiedad Lectura representa el consumo de energia acumulado hasta el fin de la jornada productiva.
