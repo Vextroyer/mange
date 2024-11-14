@@ -1,0 +1,72 @@
+\documentclass{article}
+\usepackage{graphicx}
+
+\title{Gestión del consumo de energía eléctrica}
+\author{Glenda Ríos C-311, Darío López C-311, Luis Ernesto Amat C-311 , Víctor Vena C-311}
+\date{13 de noviembre de 2024}
+
+\begin{document}
+
+\maketitle
+
+\section{Requerimientos Funcionales}
+Aqui van los requerimientos funcionales.
+
+\section{Modelado de la Base de Datos}
+Esta sección esta dividida en varias subsecciones donde se presentan en orden:
+\begin{itemize}
+\item el modelo coneptual de la base de datos utilizando el Modelo Entidad-Relación Extendido (MERX) así como una breve explicacíon de los elementos presentos en él.
+\item un esquema relacional a partir del modelo conceptual
+\item una discusion de la correctitud del diseño de la base de datos
+\end{itemize}
+\subsection{Modelo Conceptual de la Base de Datos}
+A continuacíon se presentan los distintos elementos que componen el diseño conceptual de la base de datos.
+
+\subsubsection{Entidades}
+
+\begin{itemize}
+\item Sucursal
+Esta entidad modela las sucursales o centros de trabajo descritos en las especificaciones del problema.
+La propiedad ID es la llave primaria de esta entidad.
+La propiedad NOMBRE describe el nombre de la sucursal.
+La propiedad Direccion describe la direccion fisica de la sucursal.
+La propiedad Tipo describe el tipo de instalacion que es la sucursal.
+La propiedad Limite describe el limite de consumo electrico diario establecido para dicha sucursal.
+La propiedad Aumento describe el parametro aumento definido para esta sucursal a la hora de calcular el costo.
+La propiedad Por Ciento Extra describe el parametro por\_ciento\_extra establecido para esta sucursal a la hora de calcular el costo.
+\item Area
+Esta entidad representa las distintas areas, se consideran las oficinas como areas, que pueden pertenecer a una sucursal.
+La propiedad Nombre describe el nombre del area. Es parte de la llave primaria de esta entidad.
+La propiedad Responsable contiene el nombre de la persona responsable del area.
+La propiedad ID\_Sucursal contiene el ID de la sucursal a la que pertenece esta area. Es una llave foranea y forma parte de la llave primaria de esta entidad.
+
+La entidad Area es una entidad debil cuya entidad fuerte es sucursal.
+\item Equipo
+Esta entidad modela los equipos de consumo de energia.
+La propiedad ID es la llave primaria de esta entidad.
+La propiedad Sistema\_Energia\_Critica representa si este equipo pertenece a un sistema de energia critica o no
+Las demas propiedades representan caracteristicas del equipo.
+\item Registro
+Esta entidad modela los registros historicos de consumo de energia de las sucursales.
+La propiedad Fecha representa la fecha a la que corresponde el registro. Ojo, no es la fecha en que se ingreso el registro. Esta propiedad es parte de la llave primaria de esta entidad.
+La propiedad Lectura representa el consumo de energia acumulado hasta el fin de la jornada productiva.
+La propiedad Sobre\_Limite representa la cantidad de energia consumida este dia por encima del limite mensual establecido. Se guarda este dato porque el limite puede variar en el futuro.
+La propiedad Costo representa el costo de la energia consumida este dia calculado por la formula dada. Se guarda este dato porque los parametros de la formula pueden variar en el futuro.
+La propiedad ID\_Sucursal representa la sucursal a la que corresponde este registro. Es una llave foranea de la entidad Sucursal y forma parte de la llave primaria de esta entidad.
+
+La entidad Registro es una entidad debil cuya entidad fuerte es Sucursal.
+\end{itemize}
+
+\subsubsection{Relaciones}
+\begin{itemize}
+\item Pertenece
+\includegraphics[scale=0.25]{Imagenes/Informe1/RelacionPertenece.png}
+\item Contiene
+\item Genera
+\end{itemize}
+
+\subsection{Esquema Relacional de la Base de Datos}
+
+\subsection{De la correctitud del diseño de la Base de Datos}
+
+\end{document}
