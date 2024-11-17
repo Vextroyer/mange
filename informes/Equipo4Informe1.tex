@@ -1,8 +1,9 @@
 \documentclass{article}
 \usepackage{graphicx}
+\usepackage[spanish]{babel}
 
 \title{Gestión del consumo de energía eléctrica}
-\author{Glenda Ríos C-311, Darío López C-311,  Luis Ernesto Amat C-311 , Víctor Vena C-311}
+\author{Glenda Ríos C-311, Darío López C-311, Luis Ernesto Amat C-311 , Víctor Vena C-311}
 \date{16 de noviembre de 2024}
 
 \begin{document}
@@ -82,7 +83,11 @@ A continuacíon se presentan los distintos elementos que componen el diseño con
 \begin{itemize}
 \item Sucursal
 
+\begin{figure}
 \includegraphics[scale=0.5]{Imagenes/Informe1/EntidadSucursal.png}
+\caption{Representación de la entidad Sucursal en el MERX.}
+\label{entidadSucursal}
+\end{figure}
 
 Esta entidad modela las sucursales o centros de trabajo descritos en las especificaciones del problema.
 
@@ -101,7 +106,11 @@ La propiedad Aumento describe el parámetro aumento definido para esta sucursal 
 La propiedad PorCientoExtra describe el parámetro por\_ciento\_extra establecido para esta sucursal a la hora de calcular el costo.
 \item Area
 
+\begin{figure}
 \includegraphics[scale=0.5]{Imagenes/Informe1/EntidadArea.png}
+\caption{Representación de la entidad Area en el MERX.}
+\label{entidadArea}
+\end{figure}
 
 Esta entidad representa las distintas áreas, se consideran las oficinas como áreas, que pueden pertenecer a una sucursal.
 
@@ -116,7 +125,11 @@ La propiedad ID\_Sucursal contiene el ID de la sucursal a la que pertenece esta 
 La entidad Area es una entidad débil cuya entidad fuerte es sucursal.
 \item Equipo
 
+\begin{figure}
 \includegraphics[scale=0.5]{Imagenes/Informe1/EntidadEquipo.png}
+\caption{Representación de la entidad Equipo en el MERX.}
+\label{entidadEquipo}
+\end{figure}
 
 Esta entidad modela los equipos de consumo de energía.
 
@@ -146,7 +159,11 @@ La propiedad CapacidadNominal ....
 
 \item Registro
 
+\begin{figure}
 \includegraphics[scale=0.5]{Imagenes/Informe1/EntidadRegistro.png}
+\caption{Representación de la entidad Registro en el MERX.}
+\label{entidadRegistro}
+\end{figure}
 
 Esta entidad modela los registros históricos de consumo de energía de las sucursales.
 
@@ -167,7 +184,11 @@ La entidad Registro es una entidad débil cuya entidad fuerte es Sucursal.
 \begin{itemize}
 \item Pertenece
 
+\begin{figure}
 \includegraphics[scale=0.5]{Imagenes/Informe1/RelacionPertenece.png}
+\caption{Representación de la relación Pertenece en el MERX.}
+\label{relacionPertenece}
+\end{figure}
 
 Esta relación modela la pertenecia a la sucursal de diversas áreas. Se decidió establecer las areas como entidades débiles
 en esta relación pues de disolver una sucursal desaparecen las áreas que la componen. Además en distintas sucursales pueden
@@ -175,14 +196,22 @@ existir áreas con el mismo nombre, por ejemplo administración, pero se diferen
 
 \item Contiene
 
+\begin{figure}
 \includegraphics[scale=0.5]{Imagenes/Informe1/RelacionContiene.png}
+\caption{Representación de la relación Contiene en el MERX.}
+\label{relacionContiene}
+\end{figure}
 
 Esta relación modela la ubicación de los equipos en las áreas. No se modela a equipo como una entidad débil, pues de desaparecer un área
 tiene sentido que se puedan recolocar los equipos presentes en otras áreas.
 
 \item Genera
 
+\begin{figure}
 \includegraphics[scale=0.5]{Imagenes/Informe1/RelacionGenera.png}
+\caption{Representación de la relación Genera en el MERX.}
+\label{relacionGenera}
+\end{figure}
 
 Esta relación modela la generación de registros históricos de consumo de electricidad de las sucursales. Se establece a Registro como
 una entidad débil pues la interpretación de un registro se realiza en el contexto del área donde fue tomado.
@@ -190,7 +219,27 @@ una entidad débil pues la interpretación de un registro se realiza en el conte
 \end{itemize}
 
 \subsection{Esquema Relacional de la Base de Datos}
+A continuación se presenta una descomposición de un esquema relacional basado en el MERX. Para obtener dicha descomposición se procedió de la siguiente manera. Primero se creó un esquema relacional R(U,F) siendo U el conjunto de todas las propiedades descritas
+en el MERX, y F el conjunto de dependencias funcionales obtenido a través del algoritmo de extracción de dependencias funcionales. Posteriormente se halló F' a partir de F aplicando el algoritmo para hallar un cubrimiento minimal. Finalmente se ejecutó el algoritmo de
+3FN sobre R'(U,F') para determinar la descomposición.
+
+\begin{figure}
+\includegraphics[scale=0.5]{Imagenes/Informe1/EsquemaRelacional.png}
+\caption{Descomposición del esquema relacional de la base de datos modelado a través de tablas.}
+\label{esquemaRelacional}
+\end{figure}
+
 
 \subsection{De la correctitud del diseño de la Base de Datos}
+Recordemos que un diseño es teóricamente correcto si se encuentra en 3FN o superior y cumple las propiedades PPDF y PLJ.
+
+El esquema relacional que se presentó en la sección anterior se encuentra en 3FN y cumple la PPDF como resultado de aplicar el algoritmo
+de 3FN. Sin embargo no se comprobó si cumple la PLJ, por tanto no se puede afirmar que sea un diseño teóricamente correcto.
+
+Se podría lograr el cumplimiento de la PLJ aplicando el lema de Ullman, lo cual se dejó pendiente para futuras revisiones del modelo de la
+base de datos.
+
+\newpage
+\listoffigures
 
 \end{document}
