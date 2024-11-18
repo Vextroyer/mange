@@ -112,7 +112,7 @@ def create_db(name=settings.DATABASES["default"]["engine"]):
     """
     Create database and schema if and only if the schema was modified
     """
-    file = name.split("/")[-1]
+    file = name.split(os.sep)[-1]
     master = "master_" + file
     master_name = name.replace(file, master)
 
