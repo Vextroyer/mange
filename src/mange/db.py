@@ -85,7 +85,7 @@ class Company(Base):
 
     @property
     def over_limit(self):
-        return max(0, self.calculate() - self.limit)
+        return max(0, self.reading - self.limit)
 
 class Item(Base):
     """
@@ -106,6 +106,28 @@ class Bill(Base):
     date = Column(DateTime, nullable=False)
     reading = Column(Integer, nullable=False)
     over_limit = Column(Integer, default=0)
+
+class Group(Base):
+    name = Column(String, unique=True)
+
+class User(Base):
+    name = Column(String, unique=True)
+    password = Column(String, nullable=False)
+    group_id = Column(None, ForeignKey("group.id"))
+    group = relationship(Group, backref="users")
+    token = relationship("Token", uselist=False, back_populates="user")
+
+class Token(Base):
+    value = Column(String, nullable=False)
+    user_id = Column(
+        None,
+        ForeignKey("user.id"),
+    )
+    user = relationship(
+        User,
+        back_populates="token",
+        single_parent=True
+        )
 
 
 def create_db(name=settings.DATABASES["default"]["engine"]):

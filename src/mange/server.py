@@ -165,18 +165,53 @@ def handle_not_found(e):
     e.code = 404
     return output_json(e.get_body(), e.code, e.get_headers())
 
+def get_auth_token(request):
+    return request.headers.get("Authorization", None)
+
+def is_role(role_name):
+    def is_role_decorator(fun):
+        def wraps(*args, **kwargs):
+            if request.user.group.name == role_name:
+                return fun(*args, **kwargs)
+
+            exc = APIException("Insufficient credentials") # not allowed
+            exc.code = 403
+            raise exc
+        return wraps
+    return is_role_decorator
+
+def is_admin():
+    return is_role("Admin")
+
 @app.teardown_appcontext
 def shutdown_session(exception=None):
   client.session.remove()
 
 class CompanyAPIView(APIView):
 	pass
-
     
 class BillAPIView(APIView):
 	pass
 
 class ItemAPIView(APIView):
+    pass
+
+class UserAPIView(APIView):
+    
+    @route("/login/")
+    def login(self):
+        post_data = request.json
+        if not "name" in post_data and "password" in post_data:
+            raise APIException("fields ('name','password') are required")
+        
+        name = post_data["name"]
+        password = post_data["password"]
+
+        return {
+            "token": client.login(name=name, password=password).value
+        }
+
+class GroupAPIView(APIView):
     pass
 
 # populate urls

@@ -2,8 +2,10 @@
 import base64
 from datetime import datetime
 from functools import wraps, lru_cache
+from hashlib import sha256
 import inspect
 import logging
+import uuid
 import pathlib
 import pickle
 import time
@@ -17,7 +19,10 @@ from mange.db import (
     Base,
     Company,
     Bill,
+    User,
+    Group,
     Item,
+    Token,
     load_backup,
 )
 from mange.log import logged
@@ -117,7 +122,7 @@ class Client:
         """Low level insert implementation"""
         obj = Obj(**kwargs)
         self.session.add(obj)
-        # self.session.commit()
+        self.session.commit()
 
         return obj
 
@@ -166,7 +171,42 @@ class Client:
     def get_item(self, /, **kwargs):
         return self._get(Item, **kwargs)
 
-    def liquidate_bill(self, company):
+    def get_user(self, /, **kwargs):
+        return self._get(User, **kwargs)
+
+    @staticmethod
+    def _get_hash(password):
+        return sha256(bytes(password, encoding="utf8")).hexdigest()
+
+    def create_user(self, /, **kwargs):
+        kwargs["password"] = self._get_hash(kwargs["password"])
+        user = self._create(User, **kwargs)
+        token = self._create(Token, user=user, value=str(uuid.uuid4()))
+
+        return user
+
+    def get_group(self, /, **kwargs):
+        return self._get(Group, **kwargs)
+
+    def create_group(self, /, **kwargs):
+        return self._create(Group, **kwargs)
+
+    # mid-level
+    def add_user_to_grup(self, user, grup):
+        group.users.append(user)
+        self.session.commit()
+
+        return group
+
+    def login(self, name, password):
+        user = self._get(User, name=name, password=self._get_hash(password)).one()
+
+        return user.token
+
+    def user_from_token(self, token):
+        return self._get(Token, value=token).one().user
+
+    def liquidate_bill(self, company, date=None):
         """
         Given a company, liquidate its bill.
         """
@@ -175,44 +215,44 @@ class Client:
 
         company.last_reading = company.reading
         self.update(company, last_reading=company.reading)
+        self.session.commit()
 
-        self.create_bill(
+        return self.create_bill(
             company=company,
-            date=datetime.today(),
+            date=date or datetime.today(),
             reading=company.reading,
             over_limit=over_limit
         )
     
     # high-level
-    def total_comsumption(self, company, start_date, end_date):
+    def total_consumption(self, company, start_date, end_date):
         # select * between start_date and end_date
-        return NotImplemented
+        start = self._get(Bill, date=start_date, company_id=company.id).one()
+        end = self._get(Bill, date=end_date, company_id=company.id).one()
 
-    def list_alerts(self, company):
-        # select * where over_limit=1 and company_id = company.id
-        return NotImplemented
+        return end.reading - start.reading
 
-    def average_comsumption(self, company, start_date, end_date):
+    def average_consumption(self, company, start_date, end_date):
         """
-        Monthly comsumption.
+        Monthly consumption.
         """
-        # return total/calc_months()
-        return NotImplemented
+        months = (end_date - start_date).days // 30
+        return self.total_consumption(company, start_date, end_date)/months
 
-    def over_comsumption(self, start_date, end_date):
+    def over_consumption(self, start_date, end_date):
         # select company, over_limit where over_limit > 0
-        return NotImplemented
+        return self._get(Bill).filter(Bill.over_limit > 0).all()
 
-    def predict_comsumption(self, start_date, end_date):
-        # interpolate???
-        return NotImplemented
+    def predict_consumption(self, company, start_date, end_date):
+        # :^)
+        return self.average_consumption(company, start_date, end_date)
 
-    def compare_comsumption(self, start_date, end_date, changes_date):
+    def compare_consumption(self, start_date, end_date):
         """
         a frecuencia de uso (>every time one uses an item they must register it manually wtf)
         """
-        return "won't fix"
-    
+        return self._get(Bill).filter(Bill.date >= start_date).filter(Bill.date <= end_date).all()
+
     def list_alerts(self, company):
-        #return over_comsumption.where(Company.id = company.id)
-        return NotImplemented
+        # select * where over_limit>1 and company_id = company.id
+        return self._get(Bill, company_id=company.id).filter(Bill.over_limit > 0).all()
