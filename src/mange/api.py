@@ -1,6 +1,7 @@
 """API"""
 import base64
 from datetime import datetime
+from datetime import date
 from functools import wraps, lru_cache
 from hashlib import sha256
 import inspect
@@ -17,11 +18,12 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from mange.conf import settings
 from mange.db import (
     Base,
-    Company,
-    Bill,
+    Sucursal,
+    Registro,
+    Equipo,
+    Area,
     User,
     Group,
-    Item,
     Token,
     load_backup,
 )
@@ -123,7 +125,6 @@ class Client:
         obj = Obj(**kwargs)
         self.session.add(obj)
         self.session.commit()
-
         return obj
 
     @loggedmethod
@@ -153,23 +154,29 @@ class Client:
         return obj
 
     # crud
-    def create_company(self, /, **kwargs):
-        return self._create(Company, **kwargs)
+    def create_sucursal(self, /, **kwargs):
+        return self._create(Sucursal, **kwargs)
 
-    def get_company(self, /, **kwargs):
-        return self._get(Company, **kwargs)
+    def get_sucursal(self, /, **kwargs):
+        return self._get(Sucursal, **kwargs)
 
-    def create_bill(self, /, **kwargs):
-        return self._create(Bill, **kwargs)
+    def create_registro(self, /, **kwargs):
+        return self._create(Registro, **kwargs)
 
-    def get_bill(self, /, **kwargs):
-        return self._get(Bill, **kwargs)
+    def get_registro(self, /, **kwargs):
+        return self._get(Registro, **kwargs)
 
-    def create_item(self, /, **kwargs):
-        return self._create(Item, **kwargs)
+    def create_equipo(self, /, **kwargs):
+        return self._create(Equipo, **kwargs)
 
-    def get_item(self, /, **kwargs):
-        return self._get(Item, **kwargs)
+    def get_equipo(self, /, **kwargs):
+        return self._get(Equipo, **kwargs)
+        
+    def create_area(self,/,**kwargs):
+        return self._create(Area,**kwargs)
+        
+    def get_area(self,/,**kwargs):
+        return self._get(Area,**kwargs)
 
     def get_user(self, /, **kwargs):
         return self._get(User, **kwargs)

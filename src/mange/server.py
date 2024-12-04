@@ -187,13 +187,16 @@ def is_admin():
 def shutdown_session(exception=None):
   client.session.remove()
 
-class CompanyAPIView(APIView):
+class SucursalAPIView(APIView):
 	pass
     
-class BillAPIView(APIView):
+class RegistroAPIView(APIView):
 	pass
 
-class ItemAPIView(APIView):
+class EquipoAPIView(APIView):
+    pass
+
+class AreaAPIView(APIView):
     pass
 
 class UserAPIView(APIView):
