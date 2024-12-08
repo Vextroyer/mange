@@ -1,8 +1,12 @@
-import os
+import importlib
+import base64
 from functools import wraps
 from json.encoder import JSONEncoder
-import re
 import logging
+import os
+import re
+import spec
+import sys
 
 from flask import Blueprint, Flask, request, make_response
 from flask_classful import FlaskView, route
@@ -27,6 +31,14 @@ class ModelSerializer(JSONEncoder):
         if isinstance(o, Base):
             return o.as_dict()
         return super().default(o)
+
+def import_from_path(module_name, file_path):
+    """Import a module given its name and file path."""
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    # sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
 
 encoder = ModelSerializer()
 
@@ -213,6 +225,65 @@ class UserAPIView(APIView):
 
 class GroupAPIView(APIView):
     pass
+
+class PluginAPIView(APIView):
+
+    PLUGIN_FOLDER = "plugins"
+
+    def get_queryset(self, method, *args, **kwargs):
+        """
+        get_queryset is invalid for this view
+        """
+        raise APIException("nothing to see here")
+
+    def get_plugins(self):
+        for plugin in (settings.BASE_DIR / self.PLUGIN_FOLDER).glob("*.py"):
+            if plugin.name.endswith("__init__.py"):
+                continue
+            yield plugin.name.split(".")[0]
+
+    def export_data(self, name, data):
+        env_path = settings.BASE_DIR / self.PLUGIN_FOLDER / "env"
+
+        python = f"python{sys.version_info.major}.{sys.version_info.minor}"
+
+        lib = env_path / "lib" / python  / "site-packages"
+        lib64 = env_path / "lib64" / python / "site-packages"
+        plugin_dir = settings.BASE_DIR
+
+        sys.path.extend((
+            str(lib),
+            str(lib64),
+            str(plugin_dir),
+        ))
+
+        plugin = import_from_path(name, plugin_dir / "plugins" / f"{name}.py")
+
+        controller = plugin.Controller
+
+        result = controller.export(data)
+
+        sys.path.remove(str(lib))
+        sys.path.remove(str(lib64))
+        sys.path.remove(str(plugin_dir))
+
+        return result
+
+    def index(self):
+        return list(self.get_plugins())
+
+    @route("/<name>/")
+    def export(self, name):
+        kwargs = request.json
+
+        data = kwargs.get("data", "<html></html>")
+
+        result = self.export_data(name, data)
+
+        return {
+            "data": base64.b64encode(result).decode("utf8"),
+        }
+
 
 # populate urls
 _loc = locals().copy()
