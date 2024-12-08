@@ -62,7 +62,7 @@ class Base:
     def __repr__(self):
         return self.__str__()
 
-    id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False,autoincrement=True)
 
 class Sucursal(Base):
     nombre = Column(String, unique=True, nullable=False)
@@ -84,7 +84,7 @@ class Sucursal(Base):
 class Area(Base):
     nombre = Column(String,nullable=False)
     responsable = Column(String,nullable=False)
-    id_sucursal = Column(Integer,ForeignKey("sucursal.id"),primary_key=True)
+    id_sucursal = Column(Integer,ForeignKey("sucursal.id"),primary_key=True,autoincrement=False)
     # equipo = relationship("Equipo",back_populates="area",uselist=True)
     # sucursal = relationship("Sucursal",back_populates="area")
 
